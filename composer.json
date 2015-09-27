@@ -1,0 +1,31 @@
+{
+    "name": "pay4app/ecocashlite",
+    "description": "EcoCash Lite package for Pay4App Next",
+    "type": "package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sam",
+            "email": "sam.takunda@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "4.7.*",
+        "mockery/mockery": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pay4App\\EcoCashLite\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php"
+        ]
+    }
+}
+
+
+    
