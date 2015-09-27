@@ -10,8 +10,11 @@
          stopOnFailure="false"
          syntaxCheck="false">
     <testsuites>
-        <testsuite name="EcoCash Lite Test Suite">
-            <directory>./tests/</directory>
+        <testsuite name="Parser Test Suite">
+            <directory>./tests/parser/</directory>
+        </testsuite>
+        <testsuite name="API Test Suite">
+            <directory>./tests/api/</directory>
         </testsuite>
     </testsuites>
     <filter>
