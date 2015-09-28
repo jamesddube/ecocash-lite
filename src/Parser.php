@@ -5,20 +5,23 @@ namespace Pay4App\EcoCashLite;
 use Pay4App\GatewayConfig;
 use Pay4App\Services\CheckoutHandler;
 use Pay4App\Contracts\CheckoutRepositoryInterface;
+use Pay4App\Contracts\TransferRepositoryInterface;
 
 Class Parser {
 
 	private $gatewayConfig;
 	private $checkoutHandler;
 	private $checkoutRepository;
+	private $TransferRepository;
 	public 	$gatewayID = 'ECOCASHLITE';
 
 	public function __construct(GatewayConfig $gatewayConfig, CheckoutHandler $checkoutHandler,
-							CheckoutRepositoryInterface $checkoutRepository)
+				CheckoutRepositoryInterface $checkoutRepository, TransferRepositoryInterface $transferRepository)
 	{
 		$this->gatewayConfig = $gatewayConfig;
 		$this->checkoutHandler = $checkoutHandler;
 		$this->checkoutRepository = $checkoutRepository;
+		$this->transferRepository = $transferRepository;
 	}
 
 	/**
@@ -39,7 +42,18 @@ Class Parser {
 	 */
 	public function authenticRequest($POST)
 	{
-		
+		if (!(
+			isset($POST['from']) &&
+			isset($POST['message']) &&
+			isset($POST['message_id']) &&
+			isset($POST['secret']) &&
+			isset($POST['sent_timestamp']) &&
+			isset($POST['device_id'])
+		)) return false;
+
+		if($POST['device_id'] !== $this->gatewayConfig->paymentGateways[$this->gatewayID]->publicKey) return false;
+		if($POST['secret'] !== $this->gatewayConfig->paymentGateways[$this->gatewayID]->secretKey) return false;
+		return true;
 	}
 
 	/**
