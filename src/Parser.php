@@ -77,7 +77,8 @@ Class Parser {
 	 */
 	public function isValidSMS($sms)
 	{
-		
+		if (self::isMerchantMessage($sms)) return self::parseMerchantMessage($sms);
+		return false;
 	}
 
 	/**
@@ -108,38 +109,6 @@ Class Parser {
 		$details->senderName = $outputArray[3];
 		$details->fullTransactionCode = $outputArray[4];
 		$details->newBalance = $outputArray[5];
-		$details->transactionCode = substr($details->fullTransactionCode,
-										strrpos($details->fullTransactionCode, '.') + 1);
-		return $details;
-	}
-
-	/**
-     * Determines if an SMS message is an EcoCash personal line payment notification
-     *      
-     * @param string 	$sms The SMS
-     * @return bool
-     */
-	public static function isPersonalMessage($sms)
-	{		
-		$pattern = "/EcoCash: Transfer Confirmation\. [^0-9 ]?\s?([0-9]+\.[0-9]+) from (.+)\.? Approval Code: (.+)\. New wallet balance: \\$\s?([0-9]+\.[0-9]+)/";		
-		return preg_match($pattern, $sms) ? true : false;
-	}
-
-	/**
-	 * Parses and returns transaction information from personal message
-	 * 
-	 * @param string $sms
-	 * @return object
-	 */
-	public static function parsePersonalMessage($sms)
-	{		
-		$pattern = "/EcoCash: Transfer Confirmation\. [^0-9 ]?\s?([0-9]+\.[0-9]+) from (.+)\.? Approval Code: (.+)\. New wallet balance: \\$\s?([0-9]+\.[0-9]+)/";		
-		preg_match($pattern, $sms, $outputArray);		
-		$details = new \StdClass();
-		$details->amount = $outputArray[1];
-		$details->senderName = $outputArray[2];
-		$details->fullTransactionCode = $outputArray[3];
-		$details->newBalance = $outputArray[4];
 		$details->transactionCode = substr($details->fullTransactionCode,
 										strrpos($details->fullTransactionCode, '.') + 1);
 		return $details;
