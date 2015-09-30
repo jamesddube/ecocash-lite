@@ -67,7 +67,9 @@ Class Parser {
 	 */
 	public function passesAudit($transfer)
 	{
-
+		if(!$this->auditTransfers) return true;
+		if(!$mostRecent = $this->transferRepository->mostRecent($this->gatewayID)) return true;
+		return ($mostRecent->balance + $transfer->amount == $transfer->newBalance);
 	}
 
 	/**

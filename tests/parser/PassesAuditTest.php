@@ -24,7 +24,7 @@ class PassesAuditTest extends \TestCase {
 	    $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');        
 	    $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
 	    
-	    $this->assertFalse($parser->passesAudit(
+	    $this->assertTrue($parser->passesAudit(
 	    	(object)[
 	    		'amount' 		=> 2.00,
 				'senderNumber' 	=> 772345678,
@@ -48,12 +48,13 @@ class PassesAuditTest extends \TestCase {
 	        'ECOCASHLITE' => (object)[
 	                'publicKey' => 'ABCD',
 	                'secretKey' => 'XYZ',
-	                'aux1'   	=> FALSE,
+	                'aux1'   	=> TRUE,
 	        ],
 	    ];
 	    $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
 	    $CheckoutRepository = \Mockery::mock('Pay4App\Contracts\CheckoutRepositoryInterface');
 	    $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');        
+	    $TransferRepository->shouldReceive('mostRecent')->once()->andReturn(null);
 	    $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
 	    
 	    $this->assertTrue($parser->passesAudit(
@@ -80,7 +81,7 @@ class PassesAuditTest extends \TestCase {
 	        'ECOCASHLITE' => (object)[
 	                'publicKey' => 'ABCD',
 	                'secretKey' => 'XYZ',
-	                'aux1'   	=> FALSE,
+	                'aux1'   	=> TRUE,
 	        ],
 	    ];
 	    $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -88,8 +89,9 @@ class PassesAuditTest extends \TestCase {
 	    $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');        
 	    $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
 	    
-	    $TransferRepository->shouldReceive('ECOCASHLITE')
+	    $TransferRepository->shouldReceive('mostRecent')
 	    					->once()
+	    					->with('ECOCASHLITE')
 	    					->andReturn((object)[
 	    							'phonenumber' 		=> '770112233',
 	    							'sendername' 		=> 'Lorem Ipsum',
@@ -123,7 +125,7 @@ class PassesAuditTest extends \TestCase {
 	        'ECOCASHLITE' => (object)[
 	                'publicKey' => 'ABCD',
 	                'secretKey' => 'XYZ',
-	                'aux1'   	=> FALSE,
+	                'aux1'   	=> TRUE,
 	        ],
 	    ];
 	    $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -131,8 +133,9 @@ class PassesAuditTest extends \TestCase {
 	    $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');        
 	    $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
 	    
-	    $TransferRepository->shouldReceive('ECOCASHLITE')
+	    $TransferRepository->shouldReceive('mostRecent')
 	    					->once()
+	    					->with('ECOCASHLITE')
 	    					->andReturn((object)[
 	    							'phonenumber' 		=> '770112233',
 	    							'sendername' 		=> 'Lorem Ipsum',
