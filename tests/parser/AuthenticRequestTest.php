@@ -17,7 +17,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -48,7 +48,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -79,7 +79,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -110,7 +110,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -141,7 +141,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -172,7 +172,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -203,7 +203,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -235,7 +235,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
@@ -267,7 +267,7 @@ class AuthenticRequestTest extends \TestCase {
             'ECOCASHLITE' => (object)[
                     'publicKey' => 'ABCD',
                     'secretKey' => 'XYZ',
-                    'sandbox'   => FALSE,
+                    'aux1'   	=> FALSE,
             ],
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');

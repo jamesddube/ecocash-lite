@@ -14,6 +14,7 @@ Class Parser {
 	private $checkoutRepository;
 	private $TransferRepository;
 	public 	$gatewayID = 'ECOCASHLITE';
+	private $auditTransfers = false;
 
 	public function __construct(GatewayConfig $gatewayConfig, CheckoutHandler $checkoutHandler,
 				CheckoutRepositoryInterface $checkoutRepository, TransferRepositoryInterface $transferRepository)
@@ -22,6 +23,7 @@ Class Parser {
 		$this->checkoutHandler = $checkoutHandler;
 		$this->checkoutRepository = $checkoutRepository;
 		$this->transferRepository = $transferRepository;
+		$this->auditTransfers = $gatewayConfig->paymentGateways[$this->gatewayID]->aux1;
 	}
 
 	/**
