@@ -16,7 +16,7 @@ class MessageParsingTest extends \TestCase {
         ));
 
         $this->assertEquals(true, Parser::isMerchantMessage(
-            "You have received $5.00 from 772345678 -LOREM IPSUM. Approval Code: MP123456.7890.123456. ".
+            "You have received *5.00 from 772345678 -LOREM IPSUM. Approval Code: MP123456.7890.123456. ".
             "New wallet balance: $134.28."
         ));
 
@@ -88,7 +88,7 @@ class MessageParsingTest extends \TestCase {
         ));
 
         $this->assertEquals(true, Parser::isPersonalMessage(
-            "EcoCash: Transfer Confirmation. $27.00 from LOREM IPSUM Approval Code: PP123456.2132.B01234. ".
+            "EcoCash: Transfer Confirmation. *27.00 from LOREM IPSUM Approval Code: PP123456.2132.B01234. ".
             "New wallet balance: $ 27.15"
         ));
 

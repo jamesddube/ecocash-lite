@@ -88,7 +88,7 @@ Class Parser {
      */
 	public static function isMerchantMessage($sms)
 	{		
-		$pattern = "/You have received \\$([0-9.]+) from ([0-9]+) -(.+)\. Approval Code: (.+)\. New wallet balance: \\$([0-9]+\.[0-9]+)/";		
+		$pattern = "/You have received [^0-9 ]?([0-9.]+) from ([0-9]+) -(.+)\. Approval Code: (.+)\. New wallet balance: \\$([0-9]+\.[0-9]+)/";		
 		return preg_match($pattern, $sms) ? true : false;
 	}
 
@@ -100,7 +100,7 @@ Class Parser {
 	 */
 	public static function parseMerchantMessage($sms)
 	{		
-		$pattern = "/You have received \\$([0-9]+\.[0-9]+) from ([0-9]+) -(.+)\. Approval Code: (.+)\. New wallet balance: \\$([0-9]+\.[0-9]+)/";		
+		$pattern = "/You have received [^0-9 ]?([0-9]+\.[0-9]+) from ([0-9]+) -(.+)\. Approval Code: (.+)\. New wallet balance: \\$([0-9]+\.[0-9]+)/";		
 		preg_match($pattern, $sms, $outputArray);		
 		$details = new \StdClass();
 		$details->amount = $outputArray[1];
@@ -121,7 +121,7 @@ Class Parser {
      */
 	public static function isPersonalMessage($sms)
 	{		
-		$pattern = "/EcoCash: Transfer Confirmation\. \\$\s?([0-9]+\.[0-9]+) from (.+)\.? Approval Code: (.+)\. New wallet balance: \\$\s?([0-9]+\.[0-9]+)/";		
+		$pattern = "/EcoCash: Transfer Confirmation\. [^0-9 ]?\s?([0-9]+\.[0-9]+) from (.+)\.? Approval Code: (.+)\. New wallet balance: \\$\s?([0-9]+\.[0-9]+)/";		
 		return preg_match($pattern, $sms) ? true : false;
 	}
 
@@ -133,7 +133,7 @@ Class Parser {
 	 */
 	public static function parsePersonalMessage($sms)
 	{		
-		$pattern = "/EcoCash: Transfer Confirmation\. \\$\s?([0-9]+\.[0-9]+) from (.+)\.? Approval Code: (.+)\. New wallet balance: \\$\s?([0-9]+\.[0-9]+)/";		
+		$pattern = "/EcoCash: Transfer Confirmation\. [^0-9 ]?\s?([0-9]+\.[0-9]+) from (.+)\.? Approval Code: (.+)\. New wallet balance: \\$\s?([0-9]+\.[0-9]+)/";		
 		preg_match($pattern, $sms, $outputArray);		
 		$details = new \StdClass();
 		$details->amount = $outputArray[1];
