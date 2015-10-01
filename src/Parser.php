@@ -137,7 +137,7 @@ Class Parser {
 	 */
 	public function returnFailure($errorMessage = '')
 	{
-		
+		return json_encode(['payload'=>['success'=>false, 'error'=>$errorMessage]]);
 	}
 
 	
