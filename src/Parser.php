@@ -14,7 +14,7 @@ Class Parser {
 	private $checkoutRepository;
 	private $TransferRepository;
 	public 	$gatewayID = 'ECOCASHLITE';
-	private $auditTransfers = false;
+	private $auditTransfers;
 
 	public function __construct(GatewayConfig $gatewayConfig, CheckoutHandler $checkoutHandler,
 				CheckoutRepositoryInterface $checkoutRepository, TransferRepositoryInterface $transferRepository)
@@ -29,9 +29,10 @@ Class Parser {
 	/**
 	 * Receives an SMS and processes it
 	 * 
+	 * @param array $POST The SmsSync payload
 	 * @return void
 	 */
-	public function handle()
+	public function handle($POST)
 	{
 		
 	}
@@ -131,9 +132,10 @@ Class Parser {
 	/**
 	 * Returns failure message to the SMS sender, so that sender may retry later
 	 * 
+	 * @param string $errorMessage Reason for failure (if any)
 	 * @return void
 	 */
-	public function returnFailure()
+	public function returnFailure($errorMessage = '')
 	{
 		
 	}
