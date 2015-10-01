@@ -126,7 +126,7 @@ Class Parser {
 	 */
 	public function returnSuccess()
 	{
-		
+		return json_encode(['payload'=>['success'=>true, 'error'=>null]]);
 	}
 
 	/**
