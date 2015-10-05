@@ -84,18 +84,15 @@ class HandleTest extends \TestCase {
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
         $CheckoutRepository = \Mockery::mock('Pay4App\Contracts\CheckoutRepositoryInterface');
-        $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');        
-        $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
-
-        $transferRepository = App::make('Pay4App\Contracts\TransferRepositoryInterface');
-        $transferRepository->shouldReceive('alreadyReceived')
+        $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');
+        $TransferRepository->shouldReceive('alreadyReceived')
         					->with('ECOCASHLITE', [
             					'phonenumber'      => '772345678',
             					'amount'           => 12.34,
             					'transactioncode'  => 'SRTC150923'
             				])
             				->andReturn(true);
-
+        $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
         $POST = [
 			'from' 		    => '+2637704',
 			'message' 	    => 'You have received $12.34 from 772345678 -Paul Smith. Approval Code: '.
@@ -127,23 +124,21 @@ class HandleTest extends \TestCase {
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
         $CheckoutRepository = \Mockery::mock('Pay4App\Contracts\CheckoutRepositoryInterface');
-        $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');        
-        $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
-
-        $transferRepository = App::make('Pay4App\Contracts\TransferRepositoryInterface');
-        $transferRepository->shouldReceive('alreadyReceived')
+        $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');
+        $TransferRepository->shouldReceive('alreadyReceived')
         					->with('ECOCASHLITE', [
             					'phonenumber'      => '772345678',
             					'amount'           => 12.34,
             					'transactioncode'  => 'SRTC150923'
             				])
             				->andReturn(false);
-        $transferRepository->shouldReceive('mostRecent')
+        $TransferRepository->shouldReceive('mostRecent')
         					->with('ECOCASHLITE')
         					->andReturn((object)[
         						'amount'	=> 10,
         						'balance'	=> 10,
         					]);
+        $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
 
         $POST = [
 			'from' 		    => '+2637704',
@@ -176,7 +171,7 @@ class HandleTest extends \TestCase {
         ];
         $CheckoutHandler = \Mockery::mock('Pay4App\Services\CheckoutHandler');
         $CheckoutRepository = \Mockery::mock('Pay4App\Contracts\CheckoutRepositoryInterface');
-        getRecentCheckouts($gateway, $minutes, array $filters)
+        
         $CheckoutRepository->shouldReceive('getRecentCheckouts')
         					->with('ECOCASHLITE', 43200, [
 	        					'completed' 		=> false,
@@ -184,25 +179,22 @@ class HandleTest extends \TestCase {
 					            'transactioncode'	=> 'SRTC150923'
 				            ])
         					->andReturn(null);
-        $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');        
-        $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
-
-        $transferRepository = App::make('Pay4App\Contracts\TransferRepositoryInterface');
-        $transferRepository->shouldReceive('alreadyReceived')
+        $TransferRepository = \Mockery::mock('Pay4App\Contracts\TransferRepositoryInterface');
+        $TransferRepository->shouldReceive('alreadyReceived')
         					->with('ECOCASHLITE', [
             					'phonenumber'      => '772345678',
             					'amount'           => 12.34,
             					'transactioncode'  => 'SRTC150923'
             				])
             				->andReturn(false);
-        $transferRepository->shouldReceive('mostRecent')
+        $TransferRepository->shouldReceive('mostRecent')
         					->with('ECOCASHLITE')
         					->andReturn((object)[
         						'amount'	=> 10,
         						'balance'	=> 20.56,
         					]);
 
-        $transferRepository->shouldReceive('insert')
+        $TransferRepository->shouldReceive('insert')
         					->with([
         						'gateway'			=> 'ECOCASHLITE',
 						        'phonenumber'		=> '772345678',
@@ -213,7 +205,8 @@ class HandleTest extends \TestCase {
 						        'balance'			=> 32.90,
         					])
         					->andReturn(2);
-
+        $parser = new Parser($GatewayConfig, $CheckoutHandler, $CheckoutRepository, $TransferRepository);
+        
         $POST = [
 			'from' 		    => '+2637704',
 			'message'       => 'You have received $12.34 from 772345678 -Paul Smith. Approval Code: '.

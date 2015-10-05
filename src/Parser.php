@@ -16,6 +16,10 @@ Class Parser {
 	public 	$gatewayID = 'ECOCASHLITE';
 	private $auditTransfers;
 
+	private $minutesInOneMonth = 43200;
+	private $authenticationFailMessage = 'Authentication Fail';
+	private $auditFailMessage = 'Audit Fail';
+
 	public function __construct(GatewayConfig $gatewayConfig, CheckoutHandler $checkoutHandler,
 				CheckoutRepositoryInterface $checkoutRepository, TransferRepositoryInterface $transferRepository)
 	{
@@ -34,7 +38,36 @@ Class Parser {
 	 */
 	public function handle($POST)
 	{
-		
+		if(!$this->authenticRequest($POST))	return $this->returnFailure($this->authenticationFailMessage);
+		if(!$details = $this->isValidSMS($POST['message'])) return $this->returnSuccess();
+		if( $this->transferRepository->alreadyReceived($this->gatewayID, [
+            'phonenumber'		=> $details->senderNumber,
+            'amount'			=> $details->amount,
+            'transactioncode'	=> $details->fullTransactionCode
+        ])) return $this->returnSuccess();
+
+		if($this->auditTransfers)
+		{
+			if(!$this->passesAudit($details)) return $this->returnFailure($this->auditFailMessage);
+		}
+
+		$transferId = $this->transferRepository->insert([
+            'gateway'       => $this->gatewayID,
+            'phonenumber'   => $details->senderNumber,
+            'sendername'    => $details->senderName,
+            'amount'        => $details->amount,
+            'transactioncode' => $details->fullTransactionCode,
+            'checkout'      => null,
+            'balance'       => $details->newBalance
+        ]);
+
+		if (!$checkout = $this->checkoutRepository->getRecentCheckouts($this->gatewayID, $this->minutesInOneMonth,
+			[
+				'completed' 		=> false,
+				'phonenumber'		=> $details->senderNumber,
+	            'transactioncode'	=> $details->fullTransactionCode
+            ])) return $this->returnSuccess();
+        
 	}
 
 	/**
