@@ -60,6 +60,19 @@ Class Parser {
 	}
 
 	/**
+	 * Takes an SMS string and returns the relevant details (or false on failure)
+	 * (Will also audit against balance where option is set)
+	 * 
+	 * @param string $sms The message string
+	 * @return object Parsed SMS (or false on failure)
+	 */
+	public function isValidSMS($sms)
+	{
+		if (self::isMerchantMessage($sms)) return self::parseMerchantMessage($sms);
+		return false;
+	}
+
+	/**
 	 * Given transfer details - and with the option validated - checks if
 	 * this transfer's amount and new balance fits arithmetically next to the
 	 * most recent transfer before this one
@@ -71,19 +84,6 @@ Class Parser {
 		if(!$this->auditTransfers) return true;
 		if(!$mostRecent = $this->transferRepository->mostRecent($this->gatewayID)) return true;
 		return ($mostRecent->balance + $transfer->amount == $transfer->newBalance);
-	}
-
-	/**
-	 * Takes an SMS string and returns the relevant details (or false on failure)
-	 * (Will also audit against balance where option is set)
-	 * 
-	 * @param string $sms The message string
-	 * @return object Parsed SMS (or false on failure)
-	 */
-	public function isValidSMS($sms)
-	{
-		if (self::isMerchantMessage($sms)) return self::parseMerchantMessage($sms);
-		return false;
 	}
 
 	/**
