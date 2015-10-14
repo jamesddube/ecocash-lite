@@ -2,6 +2,8 @@
 
 namespace Pay4App\EcoCashLite;
 
+use Illuminate\View\View;
+use Illuminate\Mail\Mailer;
 use Pay4App\GatewayConfig;
 use Pay4App\Services\CheckoutHandler;
 use Pay4App\Contracts\CheckoutRepositoryInterface;
@@ -9,6 +11,8 @@ use Pay4App\Contracts\TransferRepositoryInterface;
 
 Class Parser {
 
+	private $view;
+	private $mailer;
 	private $gatewayConfig;
 	private $checkoutHandler;
 	private $checkoutRepository;
@@ -19,15 +23,25 @@ Class Parser {
 	private $minutesInOneMonth = 43200;
 	private $authenticationFailMessage = 'Authentication Fail';
 	private $auditFailMessage = 'Audit Fail';
-
+	private $customerContactEmail;
+	private $customerContactEmailLabel;
+	private $adminEmailAdress;
+ 
 	public function __construct(GatewayConfig $gatewayConfig, CheckoutHandler $checkoutHandler,
-				CheckoutRepositoryInterface $checkoutRepository, TransferRepositoryInterface $transferRepository)
+		CheckoutRepositoryInterface $checkoutRepository, TransferRepositoryInterface $transferRepository,
+		View $view, Mailer $mailer)
 	{
 		$this->gatewayConfig = $gatewayConfig;
 		$this->checkoutHandler = $checkoutHandler;
 		$this->checkoutRepository = $checkoutRepository;
 		$this->transferRepository = $transferRepository;
+		$this->view = $view;
+		$this->mailer = $mailer;
 		$this->auditTransfers = $gatewayConfig->paymentGateways[$this->gatewayID]->aux1;
+
+		$this->customerContactEmail = getenv('ECOCASHLITE_CUSTOMER_CONTACT_EMAIL');
+		$this->customerContactEmailLabel = getenv('ECOASHLITE_CUSTOMER_CONTACT_EMAIL_LABEL');
+		$this->adminEmailAdress = getenv('ECOCASHLITE_ADMIN_EMAIL');
 	}
 
 	/**
@@ -60,14 +74,67 @@ Class Parser {
             'checkout'      => null,
             'balance'       => $details->newBalance
         ]);
-
+		
+		//Check if expected
 		if (!$checkout = $this->checkoutRepository->getRecentCheckouts($this->gatewayID, $this->minutesInOneMonth,
 			[
 				'completed' 		=> false,
 				'phonenumber'		=> $details->senderNumber,
-	            'transactioncode'	=> $details->fullTransactionCode
+				'held'				=> false,//Cancelled payments are held
             ])) return $this->returnSuccess();
-        
+		//Claim transfer
+		$this->checkoutRepository->update($checkout->id,
+			[
+				'transfer'		=>	$transferId,
+				'phonenumber' 	=>	$details->senderNumber,
+            	'transactioncode' => $details->fullTransactionCode,
+            ]);
+        $this->transferRepository->update($transferId, ['checkout'=>$checkout->id]);
+
+        //If amount correct, complete checkout
+        if ((float)$details->amount == $checkout->amount)
+        {
+        	$this->checkoutHandler->complete($checkout->id, []);
+         	return $this->returnSuccess();
+        }
+
+        //We get here, amount is wrong. Email parties
+        $this->checkoutRepository->update($checkout->id, [
+        	'held'=>true,
+        	'status'=>'wrongamount',
+        ]);
+        //Email admin
+        $subject = $this->view->make('ecocashlite::wrongAmountAdminEmailSubject', ['checkout'=>$checkout, 'transfer'=>$details]);
+        $this->mailer->send(
+				'ecocashlite::wrongAmountAdminEmail',
+				[
+					'checkout' => $checkout,
+					'transfer' => $details
+				],
+				function ($m) use ($checkout, $details) {
+					$m->to($this->adminEmailAdress)
+						->subject($subject->render())
+						->from($this->customerContactEmail, $this->customerContactEmailLabel)
+						->replyTo($this->customerContactEmail, $this->customerContactEmailLabel);
+				});
+        //Email buyer
+        $subject = $this->view->make('ecocashlite::wrongAmountBuyerEmailSubject', [
+	        			'checkout'=>$checkout,
+	        			'transfer'=>$details
+	        		])->render();
+        $this->mailer->send(
+				'ecocashlite::wrongAmountBuyerEmail',
+				[
+					'checkout' => $checkout,
+					'transfer' => $details
+				],
+				function ($m) use ($checkout, $details) {
+					$m->to($checkout->email)
+						->subject($subject->render())
+						->from($this->customerContactEmail, $this->customerContactEmailLabel)
+						->replyTo($this->customerContactEmail, $this->customerContactEmailLabel);
+				});
+        return $this->returnSuccess();
 	}
 
 	/**
